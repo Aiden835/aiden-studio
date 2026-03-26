@@ -267,6 +267,7 @@
     }
 
     .compare {
+      --pos: 50%;
       position: relative;
       width: 100%;
       max-width: 620px;
@@ -280,37 +281,39 @@
       cursor: ew-resize;
     }
 
-    .compare-after,
-    .compare-before {
+    .compare-layer {
       position: absolute;
       inset: 0;
     }
 
-    .compare-after img,
-    .compare-before img {
-      position: absolute;
-      inset: 0;
+    .compare-layer img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       pointer-events: none;
+      user-select: none;
+      -webkit-user-drag: none;
     }
 
     .compare-before {
-      width: 50%;
-      overflow: hidden;
-      border-right: 1px solid rgba(255,255,255,0.15);
+      clip-path: inset(0 calc(100% - var(--pos)) 0 0);
+      z-index: 2;
+    }
+
+    .compare-after {
+      z-index: 1;
     }
 
     .compare-handle {
       position: absolute;
       top: 0;
-      left: 50%;
+      left: var(--pos);
       transform: translateX(-50%);
       width: 2px;
       height: 100%;
       background: rgba(255,255,255,0.75);
       box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+      z-index: 3;
       pointer-events: none;
     }
 
@@ -338,6 +341,7 @@
       display: flex;
       justify-content: space-between;
       pointer-events: none;
+      z-index: 4;
     }
 
     .compare-badge {
@@ -549,7 +553,7 @@
 
     const portfolioList = document.getElementById('portfolioList');
 
-    works.forEach((work, index) => {
+    works.forEach((work) => {
       const card = document.createElement('article');
       card.className = 'work-card';
       card.innerHTML = `
@@ -559,18 +563,18 @@
             <p class="work-caption">${work.caption}</p>
           </div>
         </div>
-        <div class="compare" data-index="${index}" aria-label="Before and after slider for ${work.title}">
-          <div class="compare-after">
+        <div class="compare" aria-label="Before and after slider for ${work.title}" style="--pos: 50%;">
+          <div class="compare-layer compare-after">
             <img src="${work.after}" alt="After retouch for ${work.title}" draggable="false" />
           </div>
-          <div class="compare-before" style="width: 50%;">
+          <div class="compare-layer compare-before">
             <img src="${work.before}" alt="Before retouch for ${work.title}" draggable="false" />
           </div>
           <div class="compare-labels">
             <span class="compare-badge">Before</span>
             <span class="compare-badge">After</span>
           </div>
-          <div class="compare-handle" style="left: 50%;">
+          <div class="compare-handle">
             <div class="compare-knob">↔</div>
           </div>
         </div>
@@ -582,33 +586,34 @@
       const rect = compare.getBoundingClientRect();
       const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
       const percent = (x / rect.width) * 100;
-      compare.querySelector('.compare-before').style.width = percent + '%';
-      compare.querySelector('.compare-handle').style.left = percent + '%';
+      compare.style.setProperty('--pos', percent + '%');
     }
 
     document.querySelectorAll('.compare').forEach(compare => {
       let active = false;
 
-      const onPointerDown = (e) => {
+      const start = (x) => {
         active = true;
-        compare.setPointerCapture?.(e.pointerId);
-        setSlider(compare, e.clientX);
+        setSlider(compare, x);
       };
 
-      const onPointerMove = (e) => {
+      const move = (x) => {
         if (!active) return;
-        setSlider(compare, e.clientX);
+        setSlider(compare, x);
       };
 
-      const onPointerUp = () => {
+      const stop = () => {
         active = false;
       };
 
-      compare.addEventListener('pointerdown', onPointerDown);
-      compare.addEventListener('pointermove', onPointerMove);
-      compare.addEventListener('pointerup', onPointerUp);
-      compare.addEventListener('pointercancel', onPointerUp);
-      compare.addEventListener('pointerleave', onPointerUp);
+      compare.addEventListener('mousedown', (e) => start(e.clientX));
+      window.addEventListener('mousemove', (e) => move(e.clientX));
+      window.addEventListener('mouseup', stop);
+
+      compare.addEventListener('touchstart', (e) => start(e.touches[0].clientX), { passive: true });
+      window.addEventListener('touchmove', (e) => move(e.touches[0].clientX), { passive: true });
+      window.addEventListener('touchend', stop);
+
       compare.addEventListener('click', (e) => setSlider(compare, e.clientX));
     });
 
