@@ -8,12 +8,10 @@
   <style>
     :root {
       --bg: #090910;
-      --bg-soft: #10101a;
       --panel: rgba(255,255,255,0.04);
       --text: #f5f1eb;
       --muted: #b9b0a6;
       --accent: #d9b58c;
-      --accent-soft: rgba(217,181,140,0.18);
       --line: rgba(255,255,255,0.08);
       --max: 1200px;
       --radius: 22px;
@@ -230,20 +228,20 @@
     }
 
     .portfolio-list {
-  display: grid;
-  gap: 28px;
-  justify-items: center;
-}
+      display: grid;
+      gap: 28px;
+      justify-items: center;
+    }
 
     .work-card {
-  width: 100%;
-  max-width: 760px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 28px;
-  padding: 18px;
-  box-shadow: var(--shadow);
-}
+      width: 100%;
+      max-width: 760px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
 
     .work-meta {
       display: flex;
@@ -269,39 +267,40 @@
     }
 
     .compare {
-  position: relative;
-  width: 100%;
-  max-width: 620px;
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 20px;
-  aspect-ratio: 2 / 3;
-  background: #0d0d16;
-  user-select: none;
-  touch-action: none;
-}
+      position: relative;
+      width: 100%;
+      max-width: 620px;
+      margin: 0 auto;
+      overflow: hidden;
+      border-radius: 20px;
+      aspect-ratio: 2 / 3;
+      background: #0d0d16;
+      user-select: none;
+      touch-action: none;
+      cursor: ew-resize;
+    }
 
     .compare-after,
-.compare-before {
-  position: absolute;
-  inset: 0;
-}
+    .compare-before {
+      position: absolute;
+      inset: 0;
+    }
 
-.compare-after img,
-.compare-before img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-}
+    .compare-after img,
+    .compare-before img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
 
-.compare-before {
-  width: 50%;
-  overflow: hidden;
-  border-right: 1px solid rgba(255,255,255,0.15);
-}
+    .compare-before {
+      width: 50%;
+      overflow: hidden;
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
 
     .compare-handle {
       position: absolute;
@@ -312,6 +311,7 @@
       height: 100%;
       background: rgba(255,255,255,0.75);
       box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+      pointer-events: none;
     }
 
     .compare-knob {
@@ -394,7 +394,7 @@
     }
 
     .pill:hover {
-      border-color: var(--accent-soft);
+      border-color: rgba(217,181,140,0.25);
       background: rgba(217,181,140,0.08);
       color: var(--accent);
     }
@@ -487,7 +487,7 @@
         <div class="section-head">
           <span class="section-kicker">Portfolio</span>
           <h2 class="section-title">Before / After</h2>
-          <p class="section-text">Replace the image names in the code once, and the sliders will update automatically. Add more works by copying one object in the array below.</p>
+          <p class="section-text">To add new works later, just duplicate one object in the array at the bottom and change the file names.</p>
         </div>
         <div class="portfolio-list" id="portfolioList"></div>
       </div>
@@ -510,7 +510,7 @@
         <div class="contact-box">
           <span class="section-kicker">Contact</span>
           <h2 class="section-title">Let’s work together.</h2>
-          <p>Replace the links below with your real Telegram, email or Instagram. You can keep just one contact method if you want the page even cleaner.</p>
+          <p>Replace the links below with your real Telegram, email or Instagram.</p>
           <div class="contact-row">
             <a class="pill" href="https://t.me/yourusername" target="_blank" rel="noopener">Telegram</a>
             <a class="pill" href="mailto:your@email.com">Email</a>
@@ -561,10 +561,10 @@
         </div>
         <div class="compare" data-index="${index}" aria-label="Before and after slider for ${work.title}">
           <div class="compare-after">
-            <img src="${work.after}" alt="After retouch for ${work.title}" />
+            <img src="${work.after}" alt="After retouch for ${work.title}" draggable="false" />
           </div>
           <div class="compare-before" style="width: 50%;">
-            <img src="${work.before}" alt="Before retouch for ${work.title}" />
+            <img src="${work.before}" alt="Before retouch for ${work.title}" draggable="false" />
           </div>
           <div class="compare-labels">
             <span class="compare-badge">Before</span>
@@ -589,27 +589,27 @@
     document.querySelectorAll('.compare').forEach(compare => {
       let active = false;
 
-      const start = (x) => {
+      const onPointerDown = (e) => {
         active = true;
-        setSlider(compare, x);
+        compare.setPointerCapture?.(e.pointerId);
+        setSlider(compare, e.clientX);
       };
 
-      const move = (x) => {
+      const onPointerMove = (e) => {
         if (!active) return;
-        setSlider(compare, x);
+        setSlider(compare, e.clientX);
       };
 
-      const stop = () => { active = false; };
+      const onPointerUp = () => {
+        active = false;
+      };
 
-      compare.addEventListener('mousedown', e => start(e.clientX));
-      window.addEventListener('mousemove', e => move(e.clientX));
-      window.addEventListener('mouseup', stop);
-
-      compare.addEventListener('touchstart', e => start(e.touches[0].clientX), { passive: true });
-      window.addEventListener('touchmove', e => move(e.touches[0].clientX), { passive: true });
-      window.addEventListener('touchend', stop);
-
-      compare.addEventListener('click', e => setSlider(compare, e.clientX));
+      compare.addEventListener('pointerdown', onPointerDown);
+      compare.addEventListener('pointermove', onPointerMove);
+      compare.addEventListener('pointerup', onPointerUp);
+      compare.addEventListener('pointercancel', onPointerUp);
+      compare.addEventListener('pointerleave', onPointerUp);
+      compare.addEventListener('click', (e) => setSlider(compare, e.clientX));
     });
 
     document.getElementById('year').textContent = new Date().getFullYear();
