@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aiden Studio</title>
+  <meta name="description" content="Beauty and portrait retouching portfolio with interactive before and after sliders." />
+  <style>
+    :root {
+      --bg: #090910;
+      --bg-soft: #10101a;
+      --panel: rgba(255,255,255,0.04);
+      --text: #f5f1eb;
+      --muted: #b9b0a6;
+      --accent: #d9b58c;
+      --accent-soft: rgba(217,181,140,0.18);
+      --line: rgba(255,255,255,0.08);
+      --max: 1200px;
+      --radius: 22px;
+      --shadow: 0 10px 40px rgba(0,0,0,0.35);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top center, rgba(217,181,140,0.07), transparent 25%),
+        linear-gradient(180deg, #0a0a12 0%, #07070d 100%);
+      color: var(--text);
+    }
+
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max));
+      margin: 0 auto;
+    }
+
+    .nav-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(9, 9, 16, 0.72);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      object-fit: contain;
+      flex: 0 0 auto;
+    }
+
+    .brand-text {
+      font-size: 1.45rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .nav-link {
+      color: var(--muted);
+      font-size: 0.98rem;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      transition: 0.25s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--text);
+      border-color: var(--line);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .hero {
+      padding: 34px 0 44px;
+    }
+
+    .hero-card {
+      position: relative;
+      min-height: 78vh;
+      border-radius: 30px;
+      overflow: hidden;
+      background: #0d0d16;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--line);
+      isolation: isolate;
+    }
+
+    .hero-image,
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      filter: brightness(0.48);
+    }
+
+    .hero-overlay {
+      background:
+        linear-gradient(180deg, rgba(5,5,10,0.18) 0%, rgba(5,5,10,0.28) 18%, rgba(5,5,10,0.52) 68%, rgba(5,5,10,0.82) 100%),
+        linear-gradient(90deg, rgba(5,5,10,0.68) 0%, rgba(5,5,10,0.18) 45%, rgba(5,5,10,0.55) 100%);
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-end;
+      min-height: 78vh;
+      padding: clamp(28px, 4vw, 54px);
+    }
+
+    .hero-copy {
+      max-width: 860px;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      margin-bottom: 14px;
+      font-size: 0.82rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 0.95;
+      font-size: clamp(3rem, 7.2vw, 6.4rem);
+      max-width: 9.5ch;
+      text-wrap: balance;
+    }
+
+    .hero-subtitle {
+      margin: 18px 0 0;
+      max-width: 680px;
+      font-size: clamp(1rem, 1.4vw, 1.2rem);
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .section {
+      padding: 34px 0 0;
+    }
+
+    .section-head {
+      display: grid;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .section-kicker {
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .section-title {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      letter-spacing: -0.03em;
+    }
+
+    .section-text {
+      margin: 0;
+      max-width: 760px;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 1rem;
+    }
+
+    .approach-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .approach-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .approach-card h3 {
+      margin: 0 0 10px;
+      font-size: 1.04rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .approach-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.7;
+      font-size: 0.96rem;
+    }
+
+    .portfolio-list {
+      display: grid;
+      gap: 28px;
+    }
+
+    .work-card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .work-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 6px 18px;
+    }
+
+    .work-title {
+      margin: 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+
+    .work-caption {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      max-width: 680px;
+    }
+
+    .compare {
+      position: relative;
+      overflow: hidden;
+      border-radius: 20px;
+      aspect-ratio: 16 / 10;
+      background: #0d0d16;
+      user-select: none;
+      touch-action: none;
+    }
+
+    .compare img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .compare-after,
+    .compare-before {
+      position: absolute;
+      inset: 0;
+    }
+
+    .compare-before {
+      width: 50%;
+      overflow: hidden;
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
+
+    .compare-handle {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 2px;
+      height: 100%;
+      background: rgba(255,255,255,0.75);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.15);
+    }
+
+    .compare-knob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 54px;
+      height: 54px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(9,9,16,0.8);
+      display: grid;
+      place-items: center;
+      backdrop-filter: blur(8px);
+      color: var(--text);
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .compare-labels {
+      position: absolute;
+      inset: 18px 18px auto 18px;
+      display: flex;
+      justify-content: space-between;
+      pointer-events: none;
+    }
+
+    .compare-badge {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(9,9,16,0.72);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: var(--text);
+      font-size: 0.78rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .about-box,
+    .contact-box {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: clamp(24px, 3vw, 38px);
+    }
+
+    .about-box {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 28px;
+    }
+
+    .about-box p,
+    .contact-box p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 1rem;
+    }
+
+    .contact-row {
+      margin-top: 22px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 46px;
+      padding: 0 16px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,0.03);
+      color: var(--text);
+      transition: 0.25s ease;
+    }
+
+    .pill:hover {
+      border-color: var(--accent-soft);
+      background: rgba(217,181,140,0.08);
+      color: var(--accent);
+    }
+
+    footer {
+      padding: 34px 0 60px;
+      color: #8f877f;
+      font-size: 0.95rem;
+    }
+
+    @media (max-width: 991px) {
+      .nav { min-height: 76px; }
+      .approach-grid,
+      .about-box { grid-template-columns: 1fr; }
+      .hero-card,
+      .hero-content { min-height: 70vh; }
+    }
+
+    @media (max-width: 767px) {
+      .container { width: min(calc(100% - 24px), var(--max)); }
+      .nav { min-height: 70px; }
+      .brand-mark { width: 36px; height: 36px; }
+      .brand-text { font-size: 1.12rem; }
+      .nav-link { padding: 8px 0; }
+      .hero { padding-top: 16px; }
+      .hero-card,
+      .hero-content { min-height: 62vh; border-radius: 22px; }
+      .compare { aspect-ratio: 4 / 5; }
+      .work-card { padding: 12px; border-radius: 22px; }
+      .compare-knob { width: 46px; height: 46px; }
+      .compare-labels { inset: 12px 12px auto 12px; }
+      .compare-badge { font-size: 0.72rem; padding: 7px 10px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav-wrap">
+    <div class="container nav">
+      <a class="brand" href="#top" aria-label="Aiden Studio home">
+        <img class="brand-mark" src="logo.png" alt="Aiden Studio logo" />
+        <span class="brand-text">Aiden Studio</span>
+      </a>
+      <a class="nav-link" href="#contact">Get in touch</a>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container">
+        <div class="hero-card">
+          <img class="hero-image" src="hero.jpg" alt="Beauty retouching portrait" />
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <div class="hero-copy">
+              <span class="eyebrow">Aiden Studio</span>
+              <h1>Retouching you don’t notice. Results you do.</h1>
+              <p class="hero-subtitle">Beauty and portrait retouching with a focus on natural skin, balanced light and refined final polish.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Approach</span>
+          <h2 class="section-title">Clean, subtle, believable.</h2>
+          <p class="section-text">The goal is not to repaint the image, but to refine it. I focus on texture, tone and final detail so the result feels polished while still looking real.</p>
+        </div>
+        <div class="approach-grid">
+          <article class="approach-card">
+            <h3>Natural Skin</h3>
+            <p>Cleanup without flattening the face. Texture stays alive and the result remains believable.</p>
+          </article>
+          <article class="approach-card">
+            <h3>Balanced Color</h3>
+            <p>Controlled skin tones, clean contrast and gentle grading that supports the original image.</p>
+          </article>
+          <article class="approach-card">
+            <h3>Final Detail</h3>
+            <p>Careful finishing on eyes, lips, edges and micro-distractions for a polished final frame.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="work">
+      <div class="container">
+        <div class="section-head">
+          <span class="section-kicker">Portfolio</span>
+          <h2 class="section-title">Before / After</h2>
+          <p class="section-text">Replace the image names in the code once, and the sliders will update automatically. Add more works by copying one object in the array below.</p>
+        </div>
+        <div class="portfolio-list" id="portfolioList"></div>
+      </div>
+    </section>
+
+    <section class="section" id="about">
+      <div class="container">
+        <div class="about-box">
+          <div>
+            <span class="section-kicker">About</span>
+            <h2 class="section-title">Beauty and portrait retouching with restraint.</h2>
+          </div>
+          <p>I work with beauty and portrait images, focusing on clean skin, accurate tone and subtle finishing. I prefer retouching that improves the frame without erasing its texture, light or character.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="contact-box">
+          <span class="section-kicker">Contact</span>
+          <h2 class="section-title">Let’s work together.</h2>
+          <p>Replace the links below with your real Telegram, email or Instagram. You can keep just one contact method if you want the page even cleaner.</p>
+          <div class="contact-row">
+            <a class="pill" href="https://t.me/yourusername" target="_blank" rel="noopener">Telegram</a>
+            <a class="pill" href="mailto:your@email.com">Email</a>
+            <a class="pill" href="https://instagram.com/yourusername" target="_blank" rel="noopener">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">© <span id="year"></span> Aiden Studio</div>
+  </footer>
+
+  <script>
+    const works = [
+      {
+        title: "Beauty Retouch — Work 01",
+        caption: "Skin cleanup, color balance and subtle final polish.",
+        before: "before1.jpg",
+        after: "after1.jpg"
+      },
+      {
+        title: "Portrait Retouch — Work 02",
+        caption: "Natural texture, controlled contrast and cleaner detail.",
+        before: "before2.jpg",
+        after: "after2.jpg"
+      },
+      {
+        title: "Beauty Retouch — Work 03",
+        caption: "Gentle skin work with realistic finish and refined tones.",
+        before: "before3.jpg",
+        after: "after3.jpg"
+      }
+    ];
+
+    const portfolioList = document.getElementById('portfolioList');
+
+    works.forEach((work, index) => {
+      const card = document.createElement('article');
+      card.className = 'work-card';
+      card.innerHTML = `
+        <div class="work-meta">
+          <div>
+            <h3 class="work-title">${work.title}</h3>
+            <p class="work-caption">${work.caption}</p>
+          </div>
+        </div>
+        <div class="compare" data-index="${index}" aria-label="Before and after slider for ${work.title}">
+          <div class="compare-after">
+            <img src="${work.after}" alt="After retouch for ${work.title}" />
+          </div>
+          <div class="compare-before" style="width: 50%;">
+            <img src="${work.before}" alt="Before retouch for ${work.title}" />
+          </div>
+          <div class="compare-labels">
+            <span class="compare-badge">Before</span>
+            <span class="compare-badge">After</span>
+          </div>
+          <div class="compare-handle" style="left: 50%;">
+            <div class="compare-knob">↔</div>
+          </div>
+        </div>
+      `;
+      portfolioList.appendChild(card);
+    });
+
+    function setSlider(compare, clientX) {
+      const rect = compare.getBoundingClientRect();
+      const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+      const percent = (x / rect.width) * 100;
+      compare.querySelector('.compare-before').style.width = percent + '%';
+      compare.querySelector('.compare-handle').style.left = percent + '%';
+    }
+
+    document.querySelectorAll('.compare').forEach(compare => {
+      let active = false;
+
+      const start = (x) => {
+        active = true;
+        setSlider(compare, x);
+      };
+
+      const move = (x) => {
+        if (!active) return;
+        setSlider(compare, x);
+      };
+
+      const stop = () => { active = false; };
+
+      compare.addEventListener('mousedown', e => start(e.clientX));
+      window.addEventListener('mousemove', e => move(e.clientX));
+      window.addEventListener('mouseup', stop);
+
+      compare.addEventListener('touchstart', e => start(e.touches[0].clientX), { passive: true });
+      window.addEventListener('touchmove', e => move(e.touches[0].clientX), { passive: true });
+      window.addEventListener('touchend', stop);
+
+      compare.addEventListener('click', e => setSlider(compare, e.clientX));
+    });
+
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
