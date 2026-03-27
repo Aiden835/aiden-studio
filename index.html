@@ -363,18 +363,26 @@
     }
 
     .about-box {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 28px;
-    }
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 28px;
+  align-items: start;
+}
 
     .about-box p,
-    .contact-box p {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 1rem;
-    }
+.contact-box p {
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.about-box p {
+  margin: 36px 0 0;
+}
+
+.contact-box p {
+  margin: 0;
+}
 
     .contact-row {
       margin-top: 22px;
