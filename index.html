@@ -254,7 +254,7 @@
       flex-wrap: wrap;
       justify-content: space-between;
       gap: 12px;
-      padding: 8px 6px 18px;
+      padding: 8px 6px 12px;
     }
 
     .work-title {
@@ -262,14 +262,6 @@
       font-size: 1.05rem;
       font-weight: 600;
       letter-spacing: -0.02em;
-    }
-
-    .work-caption {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      max-width: 680px;
     }
 
     .compare {
@@ -538,25 +530,21 @@
     const works = [
       {
         title: "Beauty Retouch — Work 01",
-        caption: "Skin cleanup, color balance and subtle final polish.",
         before: "before1.jpg",
         after: "after1.jpg"
       },
       {
-        title: "Portrait Retouch — Work 02",
-        caption: "Natural texture, controlled contrast and cleaner detail.",
+        title: "Beauty Retouch — Work 02",
         before: "before2.jpg",
         after: "after2.jpg"
       },
       {
-        title: "Beauty Retouch — Work 03",
-        caption: "Gentle skin work with realistic finish and refined tones.",
+        title: "Portrait Retouch — Work 03",
         before: "before3.jpg",
         after: "after3.jpg"
       },
       {
-        title: "Beauty Retouch — Work 04",
-        caption: "Clean skin, balanced tones and refined finishing detail.",
+        title: "Portrait Retouch — Work 04",
         before: "before4.jpg",
         after: "after4.jpg"
       }
@@ -571,7 +559,6 @@
         <div class="work-meta">
           <div>
             <h3 class="work-title">${work.title}</h3>
-            <p class="work-caption">${work.caption}</p>
           </div>
         </div>
         <div class="compare" aria-label="Before and after slider for ${work.title}" style="--pos: 50%;">
